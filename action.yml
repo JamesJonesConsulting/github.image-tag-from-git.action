@@ -1,0 +1,20 @@
+name: gen-container-tag
+description: |
+  Generates a container compatible tag from the current branch or release tag
+
+outputs:
+  tag:
+    description: 'A container compatible tag based on the branch or release tag'
+    value: ${{ steps.container-tag.outputs.tag }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: container-tag
+      shell: bash
+      run: |
+        if [[ "$GITHUB_REF" =~ ^refs/tags.* ]]; then
+          echo "tag=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
+        else
+          echo "tag=$(echo '$GITHUB_REF_NAME' | sed 's|/|-|g')" >> $GITHUB_OUTPUT
+        fi
